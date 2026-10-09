@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>O Preço do Progresso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef8ff',
+                            100: '#d8f0ff',
+                            200: '#bfe7ff',
+                            300: '#8ed4ff',
+                            400: '#58b9ff',
+                            500: '#2a9df7',
+                            600: '#1478d5',
+                            700: '#125ea8',
+                            800: '#154f88',
+                            900: '#183f68'
+                        },
+                        warn: '#fbbf24',
+                        danger: '#fb7185',
+                        success: '#34d399'
+                    },
+                    boxShadow: {
+                        neon: '0 0 40px rgba(96, 165, 250, 0.35)'
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 35%),
+                #020817;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            background: #38bdf8;
+            border: 2px solid #e0f2fe;
+            cursor: pointer;
+        }
+
+        .range-input::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            background: #38bdf8;
+            border: 2px solid #e0f2fe;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-slate-100 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800/70 bg-slate-950/70 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-3">
+                <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-cyan-400 font-black text-slate-950">
+                    P</div>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.25em] text-brand-300">Dashboard</p>
+                    <h1 class="text-lg font-bold">O Preço do Progresso</h1>
+                </div>
+            </div>
+            <nav class="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+                <a href="#simulador" class="transition hover:text-white">Simulador</a>
+                <a href="#mapa" class="transition hover:text-white">Mapa</a>
+                <a href="#comparacoes" class="transition hover:text-white">Comparações</a>
+                <a href="#decisao" class="transition hover:text-white">Decisão</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <section class="grid gap-6 lg:grid-cols-[1.5fr_0.9fr]">
+            <div class="glass rounded-3xl p-6 shadow-neon sm:p-8">
+                <p class="mb-3 text-sm font-medium uppercase tracking-[0.3em] text-brand-300">Tema central</p>
+                <h2 class="max-w-xl text-3xl font-black leading-tight sm:text-5xl">
+                    Tecnologia que acelera, trabalho que pesa e tempo que desaparece.
+                </h2>
+                <p class="mt-5 max-w-2xl text-base text-slate-300 sm:text-lg">
+                    A era digital prometeu tempo livre, mas o custo de vida, o trabalho exigente e a conectividade
+                    transformaram a rotina em um cálculo constante entre produtividade, acesso e bem-estar.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <button data-scenario="equilibrio"
+                        class="scenario-btn rounded-full bg-brand-500/20 px-5 py-3 text-sm font-semibold text-brand-100 ring-1 ring-brand-400 transition hover:bg-brand-500/30">Cenário
+                        equilibrado</button>
+                    <button data-scenario="precarizacao"
+                        class="scenario-btn rounded-full border border-slate-600 bg-transparent px-5 py-3 text-sm font-semibold text-slate-200 transition hover:border-brand-400 hover:bg-slate-900/40 hover:text-white">Cenário
+                        de precarização</button>
+                    <button data-scenario="burnout"
+                        class="scenario-btn rounded-full border border-slate-600 bg-transparent px-5 py-3 text-sm font-semibold text-slate-200 transition hover:border-brand-400 hover:bg-slate-900/40 hover:text-white">Cenário
+                        de burnout</button>
+                </div>
+            </div>
+
+            <div class="glass rounded-3xl p-5 sm:p-6">
+                <p class="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Indicadores do dia</p>
+                <div class="space-y-4">
+                    <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                        <p class="text-sm text-slate-400">Tempo livre real</p>
+                        <p id="timeFreeSummary" class="mt-2 text-3xl font-black text-brand-300">4h 15m</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                            <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Compra mínima</p>
+                            <p id="purchaseSummary" class="mt-2 text-xl font-bold text-warn">18 dias</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                            <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Conectividade</p>
+                            <p id="connectivitySummary" class="mt-2 text-xl font-bold text-success">18%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="glass rounded-2xl p-4">
+                <p class="text-sm text-slate-400">Renda mensal líquida</p>
+                <p id="kpiIncome" class="mt-3 text-3xl font-black text-brand-300">R$ 5.200</p>
+            </div>
+            <div class="glass rounded-2xl p-4">
+                <p class="text-sm text-slate-400">Custo de conectividade</p>
+                <p id="kpiConnectivity" class="mt-3 text-3xl font-black text-success">R$ 110</p>
+            </div>
+            <div class="glass rounded-2xl p-4">
+                <p class="text-sm text-slate-400">Horas trabalhadas</p>
+                <p id="kpiWorkHours" class="mt-3 text-3xl font-black text-warn">44h</p>
+            </div>
+            <div class="glass rounded-2xl p-4">
+                <p class="text-sm text-slate-400">Índice de burnout</p>
+                <p id="kpiBurnout" class="mt-3 text-3xl font-black text-danger">63%</p>
+            </div>
+        </section>
+
+        <section id="simulador" class="mt-8 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+            <div class="glass rounded-3xl p-5 sm:p-6">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.28em] text-brand-300">Simulador</p>
+                        <h3 class="mt-2 text-2xl font-bold">Vida real e poder de compra</h3>
+                    </div>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2">
+                    <label class="block">
+                        <span class="mb-2 block text-sm text-slate-300">Profissão</span>
+                        <select id="profession"
+                            class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-3 text-base text-white outline-none ring-0 transition focus:border-brand-400">
+                            <option value="teacher">Professor</option>
+                            <option value="delivery">Motorista/entregador</option>
+                            <option value="designer">Designer</option>
+                            <option value="developer">Desenvolvedor</option>
+                            <option value="nurse">Enfermeiro</option>
+                        </select>
+                    </label>
+
+                    <label class="block">
+                        <span class="mb-2 block text-sm text-slate-300">Cidade</span>
+                        <select id="city"
+                            class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-3 text-base text-white outline-none ring-0 transition focus:border-brand-400">
+                            <option value="São Paulo">São Paulo</option>
+                            <option value="Rio">Rio de Janeiro</option>
+                            <option value="Belo Horizonte">Belo Horizonte</option>
+                            <option value="Berlin">Berlim</option>
+                            <option value="Toronto">Toronto</option>
+                        </select>
+                    </label>
+
+                    <label class="block md:col-span-2">
+                        <div class="mb-2 flex items-center justify-between text-sm text-slate-300">
+                            <span>Salário mensal</span>
+                            <span id="salaryValue" class="font-semibold text-brand-300">R$ 5.200</span>
+                        </div>
+                        <input id="salary" type="range" min="2000" max="15000" step="100" value="5200"
+                            class="range-input w-full accent-brand-500" />
+                    </label>
+
+                    <label class="block">
+                        <div class="mb-2 flex items-center justify-between text-sm text-slate-300">
+                            <span>Horas semanais</span>
+                            <span id="hoursValue" class="font-semibold text-warn">44h</span>
+                        </div>
+                        <input id="workHours" type="range" min="20" max="80" step="1" value="44"
+                            class="range-input w-full accent-amber-400" />
+                    </label>
+
+                    <label class="block">
+                        <div class="mb-2 flex items-center justify-between text-sm text-slate-300">
+                            <span>Tempo de deslocamento</span>
+                            <span id="commuteValue" class="font-semibold text-cyan-300">1,5h</span>
+                        </div>
+                        <input id="commute" type="range" min="0.5" max="3.5" step="0.1" value="1.5"
+                            class="range-input w-full accent-cyan-400" />
+                    </label>
+
+                    <label class="block">
+                        <div class="mb-2 flex items-center justify-between text-sm text-slate-300">
+                            <span>Custo do plano</span>
+                            <span id="planValue" class="font-semibold text-success">R$ 110</span>
+                        </div>
+                        <input id="planCost" type="range" min="30" max="250" step="5" value="110"
+                            class="range-input w-full accent-emerald-400" />
+                    </label>
+
+                    <label class="block">
+                        <div class="mb-2 flex items-center justify-between text-sm text-slate-300">
+                            <span>Smartphone</span>
+                            <span id="phoneValue" class="font-semibold text-rose-300">R$ 1.400</span>
+                        </div>
+                        <input id="phonePrice" type="range" min="300" max="2500" step="50" value="1400"
+                            class="range-input w-full accent-rose-400" />
+                    </label>
+                </div>
+
+                <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4">
+                        <p class="text-xs uppercase tracking-[0.25em] text-brand-300">Dias para comprar</p>
+                        <p id="daysToBuy" class="mt-3 text-3xl font-black text-white">17,8</p>
+                    </div>
+                    <div class="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
+                        <p class="text-xs uppercase tracking-[0.25em] text-amber-300">Tempo livre</p>
+                        <p id="freeTime" class="mt-3 text-3xl font-black text-white">4h 13m</p>
+                    </div>
+                    <div class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4">
+                        <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Conectividade</p>
+                        <p id="connectShare" class="mt-3 text-3xl font-black text-white">18%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mapa" class="glass rounded-3xl p-5 sm:p-6">
+                <p class="text-sm uppercase tracking-[0.28em] text-brand-300">Mapa do desequilíbrio</p>
+                <h3 class="mt-2 text-2xl font-bold">Onde o avanço tecnológico pesa mais</h3>
+
+                <div class="mt-6 grid gap-3">
+                    <button
+                        class="city-card rounded-2xl border border-slate-700 bg-slate-900/60 p-4 text-left transition hover:border-brand-400"
+                        data-city="São Paulo">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold">São Paulo</span>
+                            <span
+                                class="rounded-full bg-brand-500/20 px-2 py-1 text-xs font-semibold text-brand-300">Alta
+                                pressão</span>
+                        </div>
+                        <p class="mt-3 text-sm text-slate-300">Trabalho intenso + custo alto + internet cara.</p>
+                    </button>
+                    <button
+                        class="city-card rounded-2xl border border-slate-700 bg-slate-900/60 p-4 text-left transition hover:border-brand-400"
+                        data-city="Berlin">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold">Berlim</span>
+                            <span
+                                class="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-semibold text-emerald-300">Mais
+                                equilíbrio</span>
+                        </div>
+                        <p class="mt-3 text-sm text-slate-300">Melhor relação entre renda, conectividade e tempo livre.
+                        </p>
+                    </button>
+                    <button
+                        class="city-card rounded-2xl border border-slate-700 bg-slate-900/60 p-4 text-left transition hover:border-brand-400"
+                        data-city="Toronto">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold">Toronto</span>
+                            <span
+                                class="rounded-full bg-amber-500/20 px-2 py-1 text-xs font-semibold text-amber-300">Acesso
+                                forte</span>
+                        </div>
+                        <p class="mt-3 text-sm text-slate-300">Redes digitais maduras, mas custo de moradia ainda
+                            afetando o equilíbrio.</p>
+                    </button>
+                </div>
+
+                <div class="mt-6 rounded-2xl border border-slate-700 bg-slate-900/80 p-4">
+                    <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Resumo da cidade</p>
+                    <div class="mt-3 space-y-3 text-sm text-slate-300">
+                        <div class="flex items-center justify-between"><span>Tempo para consumir</span><span
+                                id="cityTimeToConsume" class="font-semibold text-brand-300">18 dias</span></div>
+                        <div class="flex items-center justify-between"><span>Conectividade</span><span
+                                id="cityConnectivity" class="font-semibold text-success">15%</span></div>
+                        <div class="flex items-center justify-between"><span>Burnout</span><span id="cityBurnout"
+                                class="font-semibold text-danger">61%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparacoes" class="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div class="glass rounded-3xl p-5 sm:p-6">
+                <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.28em] text-brand-300">Comparações</p>
+                        <h3 class="mt-2 text-2xl font-bold">Padrões de comportamento</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <button data-comp="equilibrio"
+                            class="comp-btn rounded-full bg-brand-500 px-3 py-2 text-xs font-semibold text-slate-950">Equilíbrio</button>
+                        <button data-comp="precarizacao"
+                            class="comp-btn rounded-full border border-slate-600 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-200">Precarização</button>
+                        <button data-comp="burnout"
+                            class="comp-btn rounded-full border border-slate-600 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-200">Burnout</button>
+                    </div>
+                </div>
+                <div class="h-[320px]">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <div id="decisao" class="glass rounded-3xl p-5 sm:p-6">
+                <p class="text-sm uppercase tracking-[0.28em] text-brand-300">Análise</p>
+                <h3 class="mt-2 text-2xl font-bold">Interpretação dos resultados</h3>
+
+                <div class="mt-5 space-y-4">
+                    <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Modelo matemático</p>
+                        <p class="mt-3 text-sm text-slate-300">
+                            O custo da vida pode ser interpretado com expressões como <span
+                                class="font-semibold text-brand-200">C(t) = a·trabalho + b·transporte +
+                                c·conectividade</span> e o tempo livre como <span
+                                class="font-semibold text-brand-200">T_l = 24 - descanso - deslocamento -
+                                trabalho</span>.
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Decisão recomendada</p>
+                        <p id="decisionText" class="mt-3 text-sm text-slate-300">
+                            O melhor cenário é aquele em que a renda cobre as despesas essenciais sem consumir a maior
+                            parte do tempo disponível. Isso aumenta a capacidade de investir em saúde, estudo e
+                            descanso.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
