@@ -24,28 +24,6 @@ A ideia central é analisar o paradoxo entre:
 - Indicadores dinâmicos sobre renda, tempo livre e esgotamento
 - Gráfico comparativo dos principais indicadores
 
-## Como abrir
-
-Basta abrir o arquivo `index.html` em um navegador, ou executar um servidor local:
-
-```bash
-cd c:/Users/labsfiap/Downloads/fase1cp-calculo
-python -m http.server 8000
-```
-
-Depois acesse:
-
-```text
-http://localhost:8000
-```
-
-## Tecnologias
-
-- HTML
-- Tailwind CSS
-- JavaScript
-- Chart.js
-
 ## Observação
 
 Este projeto foi desenvolvido como uma interface de análise e tomada de decisão, com foco em apresentar visualmente o impacto das variáveis no cotidiano das pessoas.
